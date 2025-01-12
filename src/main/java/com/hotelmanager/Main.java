@@ -15,7 +15,6 @@ public class Main {
 
         SwingUtilities.invokeLater(() -> {
             new MainFrame().setVisible(true);
-//            new LoginFrame().setVisible(true);
         });
     }
 }

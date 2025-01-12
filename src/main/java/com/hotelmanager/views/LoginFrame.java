@@ -1,5 +1,9 @@
 package com.hotelmanager.views;
 
+import com.hotelmanager.dao.UserDAO;
+import com.hotelmanager.models.User;
+import com.hotelmanager.utils.SessionManager;
+
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.border.*;
@@ -113,7 +117,7 @@ public class LoginFrame extends JFrame {
 
     private void styleButton(JButton button) {
         button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setForeground(Color.WHITE);
+        button.setForeground(Color.BLACK);
         button.setBackground(PRIMARY_COLOR);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
@@ -138,21 +142,21 @@ public class LoginFrame extends JFrame {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
 
-        // TODO: Add authentication logic here
-        // For now, just show success and open main window
-        if (!username.isEmpty() && !password.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Đăng nhập thành công!",
-                    "Thành công",
-                    JOptionPane.INFORMATION_MESSAGE);
-
+        UserDAO userDAO = new UserDAO();
+        User user = userDAO.authenticate(username, password);
+        SessionManager.setCurrentUser(user);
+        if (user != null) {
+//            JOptionPane.showMessageDialog(this,
+//            "Đăng nhập thành công!",
+//            "Thành công",
+//            JOptionPane.INFORMATION_MESSAGE);
             // Open main window
             openMainWindow();
         } else {
             JOptionPane.showMessageDialog(this,
-                    "Vui lòng nhập đầy đủ thông tin!",
-                    "Lỗi",
-                    JOptionPane.ERROR_MESSAGE);
+                "Sai tên đăng nhập hoặc mật khẩu!",
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 

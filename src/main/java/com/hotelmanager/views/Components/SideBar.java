@@ -1,6 +1,7 @@
 package com.hotelmanager.views.Components;
 
 import com.hotelmanager.utils.Constants;
+import com.hotelmanager.utils.SessionManager;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -31,7 +32,7 @@ public class SideBar extends JPanel {
     }
 
     private void addLogo() {
-        JLabel logoLabel = new JLabel("Nhà trọ Văn Dương");
+        JLabel logoLabel = new JLabel("Nhà trọ " + SessionManager.getCurrentUser().getUsername());
         logoLabel.setFont(new Font("Arial", Font.BOLD, 20));
         logoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         logoLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -95,7 +96,7 @@ public class SideBar extends JPanel {
         userPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         JLabel userIcon = new JLabel("👤");
-        JLabel userName = new JLabel("Chủ nhà");
+        JLabel userName = new JLabel(SessionManager.getCurrentUser().getUsername());
         JLabel userEmail = new JLabel("hotelmanager@chunha");
 
         userPanel.add(userIcon);
