@@ -6,7 +6,9 @@ import com.hotelmanager.views.Components.NotificationPanel;
 import com.hotelmanager.views.Components.StatisticDashboardPanel;
 import com.hotelmanager.views.Components.DashboardPanel;
 import com.hotelmanager.utils.Constants;
+import com.hotelmanager.utils.SessionManager;
 import com.hotelmanager.views.Components.SideBar;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +22,14 @@ public class MainFrame extends JFrame {
     private DashboardPanel dashboardPanel;
 
     public MainFrame() {
+        // Kiểm tra xem đã đăng nhập chưa
+        if (SessionManager.getCurrentUser() == null) {
+            // Nếu chưa đăng nhập, quay lại màn hình login
+            new LoginFrame().setVisible(true);
+            this.dispose();
+            return;
+        }
+
         setTitle("Nhà trọ Văn Dương");
         setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
