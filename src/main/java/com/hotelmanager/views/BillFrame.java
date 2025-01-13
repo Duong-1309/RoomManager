@@ -1,6 +1,6 @@
 package com.hotelmanager.views;
 
-import com.hotelmanager.views.Components.DashboardPanel;
+import com.hotelmanager.views.Components.BillPanel;
 import com.hotelmanager.utils.Constants;
 import com.hotelmanager.utils.SessionManager;
 import com.hotelmanager.views.Components.SideBar;
@@ -9,11 +9,11 @@ import com.hotelmanager.views.Components.SideBar;
 import javax.swing.*;
 import java.awt.*;
 
-public class MainFrame extends JFrame {
+public class BillFrame extends JFrame {
     private SideBar sideBar;
-    private DashboardPanel dashboardPanel;
+    private BillPanel billPanel;
 
-    public MainFrame() {
+    public BillFrame() {
         // Kiểm tra xem đã đăng nhập chưa
         if (SessionManager.getCurrentUser() == null) {
             // Nếu chưa đăng nhập, quay lại màn hình login
@@ -22,7 +22,7 @@ public class MainFrame extends JFrame {
             return;
         }
 
-        setTitle("Nhà trọ Văn Dương");
+        setTitle("Hoá đơn - Nhà trọ Văn Dương");
         setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -33,9 +33,9 @@ public class MainFrame extends JFrame {
     }
 
     private void initComponents() {
-        sideBar = new SideBar("Trang chủ");
-        dashboardPanel = new DashboardPanel();
+        sideBar = new SideBar("Hoá đơn");
+        billPanel = new BillPanel();
         add(sideBar, BorderLayout.WEST);
-        add(dashboardPanel, BorderLayout.CENTER);
+        add(billPanel, BorderLayout.CENTER);
     }
 }

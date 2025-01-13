@@ -146,11 +146,6 @@ public class LoginFrame extends JFrame {
         User user = userDAO.authenticate(username, password);
         SessionManager.setCurrentUser(user);
         if (user != null) {
-//            JOptionPane.showMessageDialog(this,
-//            "Đăng nhập thành công!",
-//            "Thành công",
-//            JOptionPane.INFORMATION_MESSAGE);
-            // Open main window
             openMainWindow();
         } else {
             JOptionPane.showMessageDialog(this,

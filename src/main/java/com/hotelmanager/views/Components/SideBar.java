@@ -1,6 +1,11 @@
 package com.hotelmanager.views.Components;
 
 import com.hotelmanager.utils.Constants;
+import com.hotelmanager.views.DashboardFrame;
+import com.hotelmanager.views.NotificationFrame;
+import com.hotelmanager.views.RoomListFrame;
+import com.hotelmanager.views.BillFrame;
+import com.hotelmanager.views.UtilitiesFrame;
 import com.hotelmanager.utils.SessionManager;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -9,14 +14,17 @@ import java.awt.event.*;
 
 public class SideBar extends JPanel {
     private String[] menuItems = {
-            "Trang chủ",
-            "Thông báo",
-            "Thông tin các phòng",
-            "Hoá đơn",
-            "Thống kê điện/nước"
+        "Trang chủ",
+        "Thông báo",
+        "Thông tin các phòng",
+        "Hoá đơn",
+        "Thống kê điện/nước"
     };
+    // add current path active
+    private final String currentPath; // Lưu path hiện tại
 
-    public SideBar() {
+    public SideBar(String currentPath) {
+        this.currentPath = currentPath;
         setPreferredSize(new Dimension(Constants.SIDEBAR_WIDTH, 0));
         setBackground(Color.WHITE);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -57,33 +65,56 @@ public class SideBar extends JPanel {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        menuItem.add(label);
-        menuItem.add(Box.createHorizontalGlue());
-
-        if (text.equals("Thống kê điện/nước")) {
+        if (text.equals(currentPath)) {
             menuItem.setBackground(Constants.PRIMARY_COLOR);
             label.setForeground(Color.WHITE);
         }
 
-        addMenuItemHoverEffect(menuItem, text);
+        menuItem.add(label);
+        menuItem.add(Box.createHorizontalGlue());
+        if (!text.equals(currentPath)) {
+            addHoverEffectAndClick(menuItem, text);
+        }
+
         return menuItem;
     }
 
-    private void addMenuItemHoverEffect(JPanel menuItem, String text) {
+    private void addHoverEffectAndClick(JPanel menuItem, String path) {
         menuItem.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                if (!text.equals("Thống kê điện/nước")) {
-                    menuItem.setBackground(Constants.BACKGROUND_COLOR);
-                }
+                menuItem.setBackground(Constants.BACKGROUND_COLOR);
+                menuItem.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (!text.equals("Thống kê điện/nước")) {
-                    menuItem.setBackground(Color.WHITE);
-                }
+                menuItem.setBackground(Color.WHITE);
             }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                navigateToPath(path);
+            }
+        });
+    }
+
+    private void navigateToPath(String path) {
+        // Đóng frame hiện tại
+        Window currentWindow = SwingUtilities.getWindowAncestor(this);
+        currentWindow.dispose();
+
+        // Mở frame mới theo path
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = switch (path) {
+                case "Trang chủ" -> new DashboardFrame();
+                case "Thông báo" -> new NotificationFrame();
+                case "Thông tin các phòng" -> new RoomListFrame();
+                case "Hoá đơn" -> new BillFrame();
+                case "Thống kê điện/nước" -> new UtilitiesFrame();
+                default -> new DashboardFrame();
+            };
+            frame.setVisible(true);
         });
     }
 
