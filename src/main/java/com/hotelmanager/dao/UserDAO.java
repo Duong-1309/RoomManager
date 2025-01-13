@@ -20,6 +20,10 @@ public class UserDAO {
             pstmt.setString(2, password);
 
             ResultSet rs = pstmt.executeQuery();
+            // check rs and raise exception if it's null
+            if (!rs.next()) {
+                throw new SQLException("User not found");
+            }
             User user = new User();
             user.setId(rs.getInt("id"));
             user.setUsername(rs.getString("username"));
