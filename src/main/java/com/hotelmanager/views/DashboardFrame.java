@@ -1,5 +1,6 @@
 package com.hotelmanager.views;
 
+import com.hotelmanager.views.Components.DashboardPanel;
 import com.hotelmanager.views.Components.StatisticDashboardPanel;
 import com.hotelmanager.utils.Constants;
 import com.hotelmanager.utils.SessionManager;
@@ -11,7 +12,7 @@ import java.awt.*;
 
 public class DashboardFrame extends JFrame {
     private SideBar sideBar;
-    private StatisticDashboardPanel statisticDashboardPanel;
+    private DashboardPanel dashboardPanel;
 
     public DashboardFrame() {
         // Kiểm tra xem đã đăng nhập chưa
@@ -34,8 +35,8 @@ public class DashboardFrame extends JFrame {
 
     private void initComponents() {
         sideBar = new SideBar("Trang chủ");
-        statisticDashboardPanel = new StatisticDashboardPanel();
+        dashboardPanel = new DashboardPanel();
         add(sideBar, BorderLayout.WEST);
-        add(statisticDashboardPanel, BorderLayout.CENTER);
+        add(dashboardPanel, BorderLayout.CENTER);
     }
 }
