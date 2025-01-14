@@ -17,8 +17,8 @@ public class NotificationFrame extends JFrame {
         // Kiểm tra xem đã đăng nhập chưa
         if (SessionManager.getCurrentUser() == null) {
             // Nếu chưa đăng nhập, quay lại màn hình login
-            new LoginFrame().setVisible(true);
-            this.dispose();
+//            new LoginFrame().setVisible(true);
+//            this.dispose();
             return;
         }
 
