@@ -2,7 +2,10 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import javax.swing.border.*;
+
+import com.hotelmanager.controllers.DashboardController;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.general.*;
@@ -12,10 +15,13 @@ public class DashboardPanel extends JPanel {
     private final Color BACKGROUND_COLOR = new Color(245, 245, 250);
     private final Color PINK_COLOR = new Color(255, 102, 153);
 
+    DashboardController dashboardController;
+
     public DashboardPanel() {
         setLayout(new BorderLayout(20, 20));
         setBackground(BACKGROUND_COLOR);
         setBorder(new EmptyBorder(20, 20, 20, 20));
+        dashboardController = new DashboardController();
 
         initComponents();
     }
@@ -34,11 +40,16 @@ public class DashboardPanel extends JPanel {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(10, 10, 10, 10);
 
+        // load data
+        List<Integer> summaryRoom = dashboardController.getSummaryRoom();
+
         // Stats cards
         JPanel statsPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         statsPanel.setBackground(BACKGROUND_COLOR);
-        statsPanel.add(createStatsCard("Số phòng ở", "10 Phòng", true));
-        statsPanel.add(createStatsCard("Số phòng trống", "20 phòng", false));
+        statsPanel.add(createStatsCard("Số phòng ", + summaryRoom.get(0) + " Phòng", true));
+        statsPanel.add(createStatsCard("Số phòng trống ", + summaryRoom.get(2) + " phòng", false));
+
+        statsPanel.add(createStatsCard("Số người đang thuê", + dashboardController.countTenants() + " Người", false));
 
         // Add components to grid
         gbc.gridx = 0;
@@ -47,19 +58,12 @@ public class DashboardPanel extends JPanel {
         gbc.weightx = 0.7;
         contentPanel.add(statsPanel, gbc);
 
-        // Calendar panel
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.weightx = 0.3;
-        contentPanel.add(new CustomCalendar(), gbc);
-
         // Pie chart
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.weighty = 1.0;
-        contentPanel.add(createChartPanel(), gbc);
-        contentPanel.add(createChartPanel(), gbc);
+        contentPanel.add(createChartPanel(summaryRoom.get(1), summaryRoom.get(2)), gbc);
 
         add(contentPanel, BorderLayout.CENTER);
     }
@@ -103,11 +107,20 @@ public class DashboardPanel extends JPanel {
         return card;
     }
 
-    private JPanel createChartPanel() {
+    private JPanel createChartPanel(Integer cBooked, Integer cAvailable) {
         // Create dataset
         DefaultPieDataset dataset = new DefaultPieDataset();
-        dataset.setValue("Phòng đã ở", 10);
-        dataset.setValue("Phòng trống", 20);
+        Integer total = cBooked + cAvailable;
+        Integer bookedPercent = Math.round((float)cBooked / total * 100);
+        Integer availablePercent = Math.round((float)cAvailable / total * 100);
+
+        // logs bookedPercent and availablePercent
+        System.out.println("total: " + total);
+        System.out.println("bookedPercent: " + bookedPercent);
+        System.out.println("availablePercent: " + availablePercent);
+
+        dataset.setValue("Phòng đã ở", bookedPercent);
+        dataset.setValue("Phòng trống", availablePercent);
 
         // Create chart
         JFreeChart chart = ChartFactory.createPieChart(

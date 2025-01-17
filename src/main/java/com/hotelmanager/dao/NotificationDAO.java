@@ -27,7 +27,7 @@ public class NotificationDAO {
             while (rs.next()) {
                 Notification notification = new Notification(
                     rs.getInt("id"),
-                    rs.getInt("room_id"),  // null = 0
+                    rs.getString("room_id"),  // null = 0
                     rs.getString("title"),
                     rs.getString("content"),
                     rs.getString("type"),

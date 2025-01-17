@@ -54,6 +54,7 @@ public class CustomCalendar extends JPanel {
         calendar.setGridColor(Color.LIGHT_GRAY);
         calendar.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         calendar.setDefaultRenderer(Object.class, new CalendarCellRenderer());
+        calendar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
         // Add components
         add(headerPanel, BorderLayout.NORTH);
@@ -87,77 +88,92 @@ public class CustomCalendar extends JPanel {
         monthLabel.setText(currentDate.getMonth().toString() + " " + currentDate.getYear());
 
         // Create calendar model
-        DefaultTableModel model = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        DefaultTableModel model = new DefaultTableModel();
 
-        // Add day of week headers
-        model.addRow(new String[]{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"});
+        // Add columns for days of week
+        for (String day : new String[]{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}) {
+            model.addColumn(day);
+        }
 
         // Get first day of month
         LocalDate firstDay = currentDate.withDayOfMonth(1);
         int daysInMonth = currentDate.lengthOfMonth();
         int firstDayOfWeek = firstDay.getDayOfWeek().getValue();
 
-        // Create calendar grid
-        Object[][] calendarData = new Object[6][7];
+        // Create calendar data
+        Vector<Vector<Object>> data = new Vector<>();
+        Vector<Object> week = new Vector<>();
         int day = 1;
 
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 7; j++) {
-                if (i == 0 && j < firstDayOfWeek - 1) {
-                    calendarData[i][j] = "";
-                } else if (day > daysInMonth) {
-                    calendarData[i][j] = "";
-                } else {
-                    calendarData[i][j] = day++;
-                }
+        // Add empty cells for days before the first day of month
+        for (int i = 1; i < firstDayOfWeek; i++) {
+            week.add("");
+        }
+
+        // Add days of the month
+        while (day <= daysInMonth) {
+            week.add(day);
+            if ((firstDayOfWeek + day - 1) % 7 == 0 || day == daysInMonth) {
+                data.add(new Vector<>(week));
+                week.clear();
             }
+            day++;
         }
 
-        // Add data to model
-        for (Object[] row : calendarData) {
-            model.addRow(row);
+        // Fill remaining cells in the last week
+        while (week.size() < 7 && !week.isEmpty()) {
+            week.add("");
+        }
+        if (!week.isEmpty()) {
+            data.add(week);
         }
 
+        model.setDataVector(data, new Vector<>(Arrays.asList("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")));
         calendar.setModel(model);
+
+        // Adjust column widths
+        TableColumnModel columnModel = calendar.getColumnModel();
+        for (int i = 0; i < calendar.getColumnCount(); i++) {
+            columnModel.getColumn(i).setPreferredWidth(50);
+        }
     }
 
     private class CalendarCellRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-
-            Component cell = super.getTableCellRendererComponent(
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            JLabel label = (JLabel) super.getTableCellRendererComponent(
                     table, value, isSelected, hasFocus, row, column);
 
-            cell.setFont(new Font("Arial", Font.PLAIN, 14));
-            ((JLabel) cell).setHorizontalAlignment(SwingConstants.CENTER);
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setFont(new Font("Arial", Font.PLAIN, 14));
 
-            // Style header row
-            if (row == 0) {
-                cell.setFont(new Font("Arial", Font.BOLD, 14));
-                cell.setForeground(new Color(82, 82, 255));
-            }
+            // Reset background and foreground
+            label.setBackground(Color.WHITE);
+            label.setForeground(Color.BLACK);
 
-            // Style today's date
-            if (value != null && !value.toString().isEmpty()) {
-                int day = Integer.parseInt(value.toString());
-                if (currentDate.getYear() == LocalDate.now().getYear() &&
-                        currentDate.getMonth() == LocalDate.now().getMonth() &&
-                        day == LocalDate.now().getDayOfMonth()) {
-                    cell.setBackground(new Color(82, 82, 255));
-                    cell.setForeground(Color.WHITE);
-                } else {
-                    cell.setBackground(Color.WHITE);
-                    cell.setForeground(Color.BLACK);
+            if (value != null) {
+                String text = value.toString();
+                if (!text.isEmpty()) {
+                    try {
+                        int day = Integer.parseInt(text);
+                        // Highlight today's date
+                        if (currentDate.getYear() == LocalDate.now().getYear() &&
+                                currentDate.getMonth() == LocalDate.now().getMonth() &&
+                                day == LocalDate.now().getDayOfMonth()) {
+                            label.setBackground(new Color(82, 82, 255));
+                            label.setForeground(Color.WHITE);
+                        }
+                    } catch (NumberFormatException e) {
+                        // This is a header
+                        label.setFont(new Font("Arial", Font.BOLD, 14));
+                        label.setForeground(new Color(82, 82, 255));
+                    }
                 }
             }
 
-            return cell;
+            return label;
         }
     }
 }
