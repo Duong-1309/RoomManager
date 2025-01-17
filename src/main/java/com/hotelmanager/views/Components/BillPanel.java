@@ -1,12 +1,16 @@
 package com.hotelmanager.views.Components;
 
+import com.hotelmanager.config.DatabaseConnection;
+
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.border.*;
-import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BillPanel extends JPanel {
-    private JTextField searchField;
     private JTabbedPane tabbedPane;
     private RoomListPanel pendingBillsPanel;
     private RoomListPanel paidBillsPanel;
@@ -14,13 +18,13 @@ public class BillPanel extends JPanel {
     public BillPanel() {
         setLayout(new BorderLayout(10, 10));
         setBackground(new Color(245, 245, 250));
-        setBorder(new EmptyBorder(20, 20, 20, 20));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         initComponents();
     }
 
     private void initComponents() {
-        // Search panel
+        // Search panel (optional, can be expanded later)
         JPanel searchPanel = createSearchPanel();
         add(searchPanel, BorderLayout.NORTH);
 
@@ -28,9 +32,12 @@ public class BillPanel extends JPanel {
         tabbedPane = new JTabbedPane();
         tabbedPane.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        // Create tabs
-        pendingBillsPanel = new RoomListPanel();
-        paidBillsPanel = new RoomListPanel();
+        // Fetch room data and create panels
+        List<String> pendingRooms = getPendingBillsRoomsFromDatabase();
+        List<String> paidRooms = getPaidBillsRoomsFromDatabase();
+
+        pendingBillsPanel = new RoomListPanel(pendingRooms);
+        paidBillsPanel = new RoomListPanel(paidRooms);
 
         tabbedPane.addTab("Cần thu", pendingBillsPanel);
         tabbedPane.addTab("Đã thu", paidBillsPanel);
@@ -45,40 +52,49 @@ public class BillPanel extends JPanel {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchPanel.setBackground(new Color(245, 245, 250));
 
-        // Search icon and text field
-        JPanel searchBox = new JPanel();
-        searchBox.setLayout(new BoxLayout(searchBox, BoxLayout.X_AXIS));
-        searchBox.setBackground(Color.WHITE);
-        searchBox.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)
-        ));
+        // Search field (optional functionality)
+        JTextField searchField = new JTextField("Tìm kiếm hóa đơn...");
+        searchField.setPreferredSize(new Dimension(300, 30));
+        searchPanel.add(searchField);
 
-        // Search icon
-        JLabel searchIcon = new JLabel("🔍");
-        searchBox.add(searchIcon);
-        searchBox.add(Box.createRigidArea(new Dimension(5, 0)));
-
-        // Search field
-        searchField = new JTextField("Search order ID...");
-        searchField.setBorder(null);
-        searchField.setPreferredSize(new Dimension(250, 25));
-        searchBox.add(searchField);
-
-        searchPanel.add(searchBox);
         return searchPanel;
     }
 
     private void customizeTabbedPane() {
         tabbedPane.setBackground(Color.WHITE);
         tabbedPane.setForeground(new Color(82, 82, 255));
-
-        // Add custom styling
-        UIManager.put("TabbedPane.selected", Color.WHITE);
-        UIManager.put("TabbedPane.contentAreaColor", Color.WHITE);
-        UIManager.put("TabbedPane.shadow", Color.WHITE);
-
-        // Set custom border for tabs
         tabbedPane.setBorder(BorderFactory.createEmptyBorder());
+    }
+
+    // Fetch pending bills data from the database
+    private List<String> getPendingBillsRoomsFromDatabase() {
+        List<String> rooms = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT room_number FROM room_details WHERE bill_status = 'pending'")) {
+
+            while (rs.next()) {
+                rooms.add(rs.getString("room_number"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rooms;
+    }
+
+    // Fetch paid bills data from the database
+    private List<String> getPaidBillsRoomsFromDatabase() {
+        List<String> rooms = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT room_number FROM room_details WHERE bill_status = 'paid'")) {
+
+            while (rs.next()) {
+                rooms.add(rs.getString("room_number"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rooms;
     }
 }

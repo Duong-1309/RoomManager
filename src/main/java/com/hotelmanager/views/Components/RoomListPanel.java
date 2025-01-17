@@ -2,27 +2,18 @@ package com.hotelmanager.views.Components;
 
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.border.*;
+import java.util.List;
 
 public class RoomListPanel extends JPanel {
-    public RoomListPanel() {
-        setLayout(new GridLayout(0, 4, 20, 20)); // 4 columns, dynamic rows
+    public RoomListPanel(List<String> roomNumbers) {
+        setLayout(new GridLayout(0, 4, 20, 20)); // 4 cột, tự động thêm hàng
         setBackground(new Color(245, 245, 250));
-        setBorder(new EmptyBorder(20, 0, 20, 0));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Add sample rooms
-        addRoom("Phòng 1A");
-        addRoom("Phòng 2C");
-        addRoom("Phòng 4D");
-        addRoom("Phòng 5A");
-        addRoom("Phòng 6A");
-        addRoom("Phòng 7A");
-        addRoom("Phòng 8A");
-    }
-
-    private void addRoom(String roomName) {
-        JPanel roomCard = createRoomCard(roomName);
-        add(roomCard);
+        // Thêm các phòng
+        for (String roomNumber : roomNumbers) {
+            add(createRoomCard("Phòng " + roomNumber)); // Thêm chữ "Phòng" trước số phòng
+        }
     }
 
     private JPanel createRoomCard(String roomName) {
@@ -30,16 +21,16 @@ public class RoomListPanel extends JPanel {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
 
-        // Room name
-        JLabel nameLabel = new JLabel(roomName);
+        // Tên phòng
+        JLabel nameLabel = new JLabel(roomName); // Hiển thị tên phòng
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Detail button
+        // Nút chi tiết
         JButton detailButton = createDetailButton();
 
         card.add(nameLabel);
@@ -57,14 +48,14 @@ public class RoomListPanel extends JPanel {
         button.setBorderPainted(false);
         button.setFocusPainted(false);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(100, 30));
 
-        // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(102, 102, 255));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(82, 82, 255));
             }
