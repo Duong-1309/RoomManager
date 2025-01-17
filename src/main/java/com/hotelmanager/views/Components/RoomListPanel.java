@@ -12,7 +12,7 @@ public class RoomListPanel extends JPanel {
 
         // Thêm các phòng
         for (String roomNumber : roomNumbers) {
-            add(createRoomCard("Phòng " + roomNumber)); // Thêm chữ "Phòng" trước số phòng
+            add(createRoomCard("Phòng " + roomNumber)); // Chỉ thêm "Phòng" tại đây
         }
     }
 
@@ -26,7 +26,7 @@ public class RoomListPanel extends JPanel {
         ));
 
         // Tên phòng
-        JLabel nameLabel = new JLabel(roomName); // Hiển thị tên phòng
+        JLabel nameLabel = new JLabel(roomName);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 

@@ -19,7 +19,7 @@ public class RoomListFrame extends JFrame {
         setTitle("Thông tin các phòng");
         setSize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(20, 20));
         getContentPane().setBackground(Constants.BACKGROUND_COLOR);
 
         initComponents();
@@ -27,21 +27,32 @@ public class RoomListFrame extends JFrame {
     }
 
     private void initComponents() {
-        // Thêm thanh navigation (SideBar)
+        // Thanh navigation
         SideBar sideBar = new SideBar("Thông tin các phòng");
         add(sideBar, BorderLayout.WEST);
 
-        // Lấy danh sách các phòng từ database
-        List<String> rentedRooms = getRentedRoomsFromDatabase();
+        // Panel chính (chứa tiêu đề và danh sách phòng)
+        JPanel mainPanel = new JPanel(new BorderLayout(20, 20));
+        mainPanel.setBackground(Constants.BACKGROUND_COLOR);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Panel danh sách các phòng
+        // Tiêu đề
+        JLabel titleLabel = new JLabel("Thông tin các phòng");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+        // Danh sách phòng
+        List<String> rentedRooms = getRentedRoomsFromDatabase();
         RoomListPanel roomListPanel = new RoomListPanel(rentedRooms);
 
-        // Thêm thanh cuộn nếu cần
+        // Thêm danh sách phòng vào ScrollPane
         JScrollPane scrollPane = new JScrollPane(roomListPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Thêm mainPanel vào Center
+        add(mainPanel, BorderLayout.CENTER);
     }
 
     private List<String> getRentedRoomsFromDatabase() {
@@ -51,7 +62,7 @@ public class RoomListFrame extends JFrame {
              ResultSet rs = stmt.executeQuery("SELECT room_number FROM room_details WHERE status = 'Được thuê'")) {
 
             while (rs.next()) {
-                rooms.add(rs.getString("room_number"));
+                rooms.add("" + rs.getString("room_number"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
