@@ -3,14 +3,14 @@ import java.time.LocalDateTime;
 
 public class Notification {
     private int id;
-    private Integer roomId;  // Có thể null nếu là thông báo chung
+    private String roomId;  // Có thể null nếu là thông báo chung
     private String title;
     private String content;
     private String type;
     private boolean isRead;
     private LocalDateTime createdAt;
 
-    public Notification(int id, Integer roomId, String title, String content, String type, boolean isRead, LocalDateTime createdAt) {
+    public Notification(int id, String roomId, String title, String content, String type, boolean isRead, LocalDateTime createdAt) {
         this.id = id;
         this.roomId = roomId;
         this.title = title;
@@ -31,6 +31,10 @@ public class Notification {
 
     public String getType() {
         return type;
+    }
+
+    public String getRoomId() {
+        return roomId;
     }
 
     // get title

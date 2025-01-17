@@ -36,14 +36,13 @@ public class NotificationItem extends JPanel {
         // Content panel
         JPanel contentPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         contentPanel.setOpaque(false);
-
-        JLabel titleLabel = new JLabel(notification.getTitle());
+        JLabel titleLabel = new JLabel("Phòng " + notification.getRoomId() + " - " + notification.getTitle());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         titleLabel.setForeground(notification.isRead() ? Color.BLACK : Color.WHITE);
 
         JLabel contentLabel = new JLabel(notification.getContent());
-        contentLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        contentLabel.setForeground(notification.isRead() ? Color.GRAY : Color.WHITE);
+        contentLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        titleLabel.setForeground(notification.isRead() ? Color.BLACK : Color.WHITE);
 
         contentPanel.add(titleLabel);
         contentPanel.add(contentLabel);
