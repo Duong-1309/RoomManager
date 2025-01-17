@@ -24,17 +24,17 @@ public class BillPanel extends JPanel {
     }
 
     private void initComponents() {
-        // Search panel (optional, can be expanded later)
+        // Tạo panel tìm kiếm (có thể thêm chức năng sau này)
         JPanel searchPanel = createSearchPanel();
         add(searchPanel, BorderLayout.NORTH);
 
-        // Tabbed pane
+        // Tạo tabbed pane
         tabbedPane = new JTabbedPane();
         tabbedPane.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        // Fetch room data and create panels
-        List<String> pendingRooms = getPendingBillsRoomsFromDatabase();
-        List<String> paidRooms = getPaidBillsRoomsFromDatabase();
+        // Lấy dữ liệu từ cơ sở dữ liệu
+        List<String[]> pendingRooms = getPendingBillsRoomsFromDatabase();
+        List<String[]> paidRooms = getPaidBillsRoomsFromDatabase();
 
         pendingBillsPanel = new RoomListPanel(pendingRooms);
         paidBillsPanel = new RoomListPanel(paidRooms);
@@ -42,7 +42,6 @@ public class BillPanel extends JPanel {
         tabbedPane.addTab("Cần thu", pendingBillsPanel);
         tabbedPane.addTab("Đã thu", paidBillsPanel);
 
-        // Customize tab appearance
         customizeTabbedPane();
 
         add(tabbedPane, BorderLayout.CENTER);
@@ -52,7 +51,7 @@ public class BillPanel extends JPanel {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchPanel.setBackground(new Color(245, 245, 250));
 
-        // Search field (optional functionality)
+        // Trường tìm kiếm (chỉ để hiển thị, chưa có chức năng)
         JTextField searchField = new JTextField("Tìm kiếm hóa đơn...");
         searchField.setPreferredSize(new Dimension(300, 30));
         searchPanel.add(searchField);
@@ -66,15 +65,14 @@ public class BillPanel extends JPanel {
         tabbedPane.setBorder(BorderFactory.createEmptyBorder());
     }
 
-    // Fetch pending bills data from the database
-    private List<String> getPendingBillsRoomsFromDatabase() {
-        List<String> rooms = new ArrayList<>();
+    private List<String[]> getPendingBillsRoomsFromDatabase() {
+        List<String[]> rooms = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT room_number FROM room_details WHERE bill_status = 'pending'")) {
+             ResultSet rs = stmt.executeQuery("SELECT room_number, bill_status FROM room_details WHERE bill_status = 'pending'")) {
 
             while (rs.next()) {
-                rooms.add(rs.getString("room_number"));
+                rooms.add(new String[]{rs.getString("room_number"), rs.getString("bill_status")});
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,15 +80,14 @@ public class BillPanel extends JPanel {
         return rooms;
     }
 
-    // Fetch paid bills data from the database
-    private List<String> getPaidBillsRoomsFromDatabase() {
-        List<String> rooms = new ArrayList<>();
+    private List<String[]> getPaidBillsRoomsFromDatabase() {
+        List<String[]> rooms = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT room_number FROM room_details WHERE bill_status = 'paid'")) {
+             ResultSet rs = stmt.executeQuery("SELECT room_number, bill_status FROM room_details WHERE bill_status = 'paid'")) {
 
             while (rs.next()) {
-                rooms.add(rs.getString("room_number"));
+                rooms.add(new String[]{rs.getString("room_number"), rs.getString("bill_status")});
             }
         } catch (Exception e) {
             e.printStackTrace();

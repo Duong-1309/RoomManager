@@ -42,8 +42,8 @@ public class RoomListFrame extends JFrame {
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
         // Danh sách phòng
-        List<String> rentedRooms = getRentedRoomsFromDatabase();
-        RoomListPanel roomListPanel = new RoomListPanel(rentedRooms);
+        List<String[]> rooms = getRoomsFromDatabase();
+        RoomListPanel roomListPanel = new RoomListPanel(rooms);
 
         // Thêm danh sách phòng vào ScrollPane
         JScrollPane scrollPane = new JScrollPane(roomListPanel);
@@ -55,14 +55,14 @@ public class RoomListFrame extends JFrame {
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    private List<String> getRentedRoomsFromDatabase() {
-        List<String> rooms = new ArrayList<>();
+    private List<String[]> getRoomsFromDatabase() {
+        List<String[]> rooms = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT room_number FROM room_details WHERE status = 'Được thuê'")) {
+             ResultSet rs = stmt.executeQuery("SELECT room_number, status FROM room_details")) {
 
             while (rs.next()) {
-                rooms.add("" + rs.getString("room_number"));
+                rooms.add(new String[]{rs.getString("room_number"), rs.getString("status")});
             }
         } catch (SQLException e) {
             e.printStackTrace();
