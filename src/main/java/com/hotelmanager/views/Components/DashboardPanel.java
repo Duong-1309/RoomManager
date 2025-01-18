@@ -47,7 +47,7 @@ public class DashboardPanel extends JPanel {
         JPanel statsPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         statsPanel.setBackground(BACKGROUND_COLOR);
         statsPanel.add(createStatsCard("Số phòng ", + summaryRoom.get(0) + " Phòng", true));
-        statsPanel.add(createStatsCard("Số phòng trống ", + summaryRoom.get(2) + " phòng", false));
+        statsPanel.add(createStatsCard("Số phòng được thuê ", + summaryRoom.get(1) + " phòng", false));
 
         statsPanel.add(createStatsCard("Số người đang thuê", + dashboardController.countTenants() + " Người", false));
 
