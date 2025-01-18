@@ -1,8 +1,6 @@
 package com.hotelmanager.controllers;
 
 import com.hotelmanager.dao.DashboardDAO;
-import com.hotelmanager.dao.NotificationDAO;
-import com.hotelmanager.models.Notification;
 
 import java.util.List;
 
@@ -21,4 +19,7 @@ public class DashboardController {
         return dashboardDAO.countTenants();
     }
 
+    public List<Object[]> getElectricAndWaterUsage() {
+        return dashboardDAO.getElectricAndWaterUsage();
+    }
 }

@@ -1,7 +1,6 @@
 package com.hotelmanager.dao;
 
 import com.hotelmanager.config.DatabaseConnection;
-import com.hotelmanager.models.Notification;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,4 +46,30 @@ public class DashboardDAO {
         return cTenants;
     }
 
+    public List<Object[]> getElectricAndWaterUsage() {
+        List<Object[]> usageData = new ArrayList<>();
+        String sql = """
+            SELECT 
+                month, 
+                SUM(electric_new_index - electric_old_index) AS total_electric_usage,
+                SUM(water_new_index - water_old_index) AS total_water_usage
+            FROM bills
+            GROUP BY month
+            ORDER BY month;
+        """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                usageData.add(new Object[]{
+                        rs.getInt("month"),
+                        rs.getInt("total_electric_usage"),
+                        rs.getInt("total_water_usage")
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return usageData;
+    }
 }

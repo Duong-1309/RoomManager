@@ -1,11 +1,8 @@
 package com.hotelmanager.views.Components;
 
-// Thêm các import cần thiết
 import javax.swing.JPanel;
-import javax.swing.BorderFactory;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.Dimension;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -14,46 +11,52 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
-
+import com.hotelmanager.controllers.DashboardController;
 import com.hotelmanager.utils.Constants;
-import org.jfree.chart.plot.*;
-import org.jfree.data.category.*;
-import java.awt.*;
+
+import java.util.List;
 
 public class UtilityChartsPanel extends JPanel {
+    private DashboardController dashboardController;
 
     public UtilityChartsPanel() {
         setLayout(new GridLayout(2, 1, 0, 20));
         setBackground(Constants.BACKGROUND_COLOR);
 
+        dashboardController = new DashboardController();
         initCharts();
     }
 
     private void initCharts() {
         // Electricity Chart
         ChartPanel electricityChartPanel = createChartPanel(
-                "Tiền điện các tháng",
+                "Số điện các tháng (kWh)",
                 Constants.PRIMARY_COLOR,
-                "Tiền điện"
+                "Số điện",
+                true // true để lấy dữ liệu số điện
         );
 
         // Water Chart
         ChartPanel waterChartPanel = createChartPanel(
-                "Tiền nước các tháng",
+                "Số nước các tháng (m³)",
                 Constants.DANGER_COLOR,
-                "Tiền nước"
+                "Số nước",
+                false // false để lấy dữ liệu số nước
         );
 
         add(electricityChartPanel);
         add(waterChartPanel);
     }
 
-    private ChartPanel createChartPanel(String title, Color color, String series) {
+    private ChartPanel createChartPanel(String title, Color color, String series, boolean isElectricity) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        List<Object[]> usageData = dashboardController.getElectricAndWaterUsage();
 
-        // Add sample data
-        for (int i = 1; i <= 10; i++) {
-            dataset.addValue(Math.random() * 100, series, "Tháng " + i);
+        // Thêm dữ liệu thực từ bảng bills
+        for (Object[] data : usageData) {
+            int month = (int) data[0];
+            int value = isElectricity ? (int) data[1] : (int) data[2]; // Điện hoặc Nước
+            dataset.addValue(value, series, "Tháng " + month);
         }
 
         JFreeChart chart = ChartFactory.createBarChart(
