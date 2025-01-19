@@ -77,16 +77,6 @@ public class DashboardPanel extends JPanel {
                 BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
 
-        // Icon
-        JLabel iconLabel = new JLabel(isOccupied ? "✓" : "✗");
-        iconLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        iconLabel.setForeground(isOccupied ? new Color(0, 200, 100) : PRIMARY_COLOR);
-        iconLabel.setBackground(new Color(240, 240, 255));
-        iconLabel.setOpaque(true);
-        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        iconLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        card.add(iconLabel, BorderLayout.WEST);
-
         // Text panel
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));

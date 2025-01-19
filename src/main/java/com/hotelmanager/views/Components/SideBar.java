@@ -40,9 +40,9 @@ public class SideBar extends JPanel {
     }
 
     private void addLogo() {
-        JLabel logoLabel = new JLabel("Nhà trọ " + SessionManager.getCurrentUser().getUsername());
+        JLabel logoLabel = new JLabel("Nhà trọ Văn Dương ");
         logoLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        logoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
         add(logoLabel);
         add(Box.createRigidArea(new Dimension(0, 20)));
