@@ -10,15 +10,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import com.hotelmanager.config.DatabaseConnection;
 import com.hotelmanager.controllers.BillController;
+import com.hotelmanager.models.BillDetail;
 import com.hotelmanager.models.BillRoomList;
 
 
 public class BillRoomPanel extends JPanel {
     private List<BillRoomList> rooms;
+    private BillController billController;
+
     public BillRoomPanel(List<BillRoomList> rooms) {
         setLayout(new GridLayout(0, 4, 20, 20)); // Bố cục 4 cột, tự động thêm hàng
         setBackground(new Color(245, 245, 250));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        billController = new BillController();
         this.rooms = rooms;
 
         // Thêm các phòng vào danh sách
@@ -61,7 +66,7 @@ public class BillRoomPanel extends JPanel {
         date.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Nút chi tiết
-        JButton detailButton = createDetailButton(room.getRoomId());
+        JButton detailButton = createDetailButton(room.getId());
 
         // Thêm các thành phần vào card
         card.add(nameLabel);
@@ -77,8 +82,8 @@ public class BillRoomPanel extends JPanel {
         return card;
     }
 
-    private JButton createDetailButton(String roomNumber) {
-        JButton button = new JButton("Chi tiết");
+    private JButton createDetailButton(int bill_id) {
+        JButton button = new JButton("Chi tiết hoá đơn");
         button.setFont(new Font("Arial", Font.PLAIN, 14));
         button.setForeground(Color.WHITE);
         button.setBackground(new Color(128, 0, 128));
@@ -99,11 +104,12 @@ public class BillRoomPanel extends JPanel {
         });
 
         button.addActionListener(e -> {
-            List<String[]> tenants = getTenantsByRoom(roomNumber);
-            if (tenants.isEmpty()) {
-                JOptionPane.showMessageDialog(button, "Không có người thuê trong phòng " + roomNumber);
+            BillDetail billDetail = billController.getBillDetailById(bill_id);
+
+            if (billDetail == null) {
+                JOptionPane.showMessageDialog(button, "Không tìm thấy hoá đơn " + bill_id);
             } else {
-                showTenantsDialog(roomNumber, tenants);
+                showBillDetailDialog(billDetail);
             }
         });
 
@@ -139,28 +145,27 @@ public class BillRoomPanel extends JPanel {
         return tenants;
     }
 
-    private void showTenantsDialog(String roomNumber, List<String[]> tenants) {
-        JDialog dialog = new JDialog((Frame) null, "Danh sách người thuê - Phòng " + roomNumber, true);
+    private void showBillDetailDialog(BillDetail billDetail) {
+        JDialog dialog = new JDialog((Frame) null, "Chi tiết hoá đơn - Phòng " + billDetail.getRoomId() + " tháng " + billDetail.getMonth() + "/" + billDetail.getYear(), true);
         dialog.setSize(900, 500);
         dialog.setLocationRelativeTo(null);
         dialog.setLayout(new BorderLayout());
 
-        JLabel titleLabel = new JLabel("Phòng " + roomNumber + " - Danh sách người thuê", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Chi tiết hoá đơn - Phòng " + billDetail.getRoomId() + " tháng " + billDetail.getMonth() + "/" + billDetail.getYear());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         dialog.add(titleLabel, BorderLayout.NORTH);
 
-        String[] columnNames = {"STT", "Họ và Tên", "Số CCCD", "Ngày sinh", "Đăng ký tạm trú", "Số điện thoại", "Ngày bắt đầu thuê"};
-        Object[][] data = new Object[tenants.size()][columnNames.length];
-        for (int i = 0; i < tenants.size(); i++) {
-            String[] tenant = tenants.get(i);
-            data[i][0] = i + 1;
-            data[i][1] = tenant[0];
-            data[i][2] = tenant[1];
-            data[i][3] = tenant[2];
-            data[i][4] = tenant[3];
-            data[i][5] = tenant[4];
-            data[i][6] = tenant[5];
-        }
+
+        String[] columnNames = {"STT", "Chi tiết", "Số lượng", "Giá", "Số tiền"};
+        Object[][] data = new Object[][] {
+            {"1", "Tiền Phòng", "1", formatCurrency(billDetail.getRentAmount()), formatCurrency(billDetail.getRentAmount())},
+            {"2", "Tiền điện", billDetail.getElectricNewIndex() - billDetail.getElectricOldIndex(), formatCurrency(billDetail.getElectricPrice()),formatCurrency(billDetail.getElectricAmount())},
+            {"3", "Tiền nước", billDetail.getWaterNewIndex() - billDetail.getWaterOldIndex(), formatCurrency(billDetail.getWaterPrice()), formatCurrency(billDetail.getWaterAmount())},
+            {"4", "Tiền rác", "1", formatCurrency(billDetail.getGarbageFee()), formatCurrency(billDetail.getGarbageFee())},
+            {"5", "Tiền wifi", "1", formatCurrency(billDetail.getWifiFee()), formatCurrency(billDetail.getWifiFee())},
+            {"6", "Tiền gửi xe", "1", formatCurrency(billDetail.getParkingFee()), formatCurrency(billDetail.getParkingFee())},
+            {"", "", "", "Tổng cộng", formatCurrency(billDetail.getTotalAmount())}
+        };
 
         JTable table = new JTable(data, columnNames);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -176,5 +181,9 @@ public class BillRoomPanel extends JPanel {
         dialog.add(closeButton, BorderLayout.SOUTH);
 
         dialog.setVisible(true);
+    }
+
+    private String formatCurrency(double amount) {
+        return String.format("%,.0f", amount);
     }
 }
