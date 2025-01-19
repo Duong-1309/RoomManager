@@ -86,9 +86,9 @@ public class NotificationItem extends JPanel {
 
     private String getIconForType(String type) {
         return switch (type) {
-            case "BILL" -> "💰";
-            case "MAINTENANCE" -> "🔧";
-            default -> "📢";
+            case "BILL" -> "";
+            case "MAINTENANCE" -> "";
+            default -> "";
         };
     }
 }
