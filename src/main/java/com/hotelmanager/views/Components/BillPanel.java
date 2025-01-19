@@ -1,25 +1,24 @@
 package com.hotelmanager.views.Components;
 
-import com.hotelmanager.config.DatabaseConnection;
+
+import com.hotelmanager.controllers.BillController;
+import com.hotelmanager.models.BillRoomList;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BillPanel extends JPanel {
     private JTabbedPane tabbedPane;
-    private RoomListPanel pendingBillsPanel;
-    private RoomListPanel paidBillsPanel;
+    private BillRoomPanel pendingBillsPanel;
+    private BillRoomPanel paidBillsPanel;
+    private BillController billController;
 
     public BillPanel() {
         setLayout(new BorderLayout(10, 10));
         setBackground(new Color(245, 245, 250));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
+        billController = new BillController();
         initComponents();
     }
 
@@ -33,11 +32,17 @@ public class BillPanel extends JPanel {
         tabbedPane.setFont(new Font("Arial", Font.PLAIN, 14));
 
         // Lấy dữ liệu từ cơ sở dữ liệu
-        List<String[]> pendingRooms = getPendingBillsRoomsFromDatabase();
-        List<String[]> paidRooms = getPaidBillsRoomsFromDatabase();
+        List<BillRoomList> pendingRooms = billController.getBillRoomListByStatus("PENDING");
+        List<BillRoomList> paidRooms = billController.getBillRoomListByStatus("PAID");
 
-        pendingBillsPanel = new RoomListPanel(pendingRooms);
-        paidBillsPanel = new RoomListPanel(paidRooms);
+        pendingBillsPanel = new BillRoomPanel(pendingRooms);
+        paidBillsPanel = new BillRoomPanel(paidRooms);
+
+        // Revalidate và repaint trước khi thêm vào tab
+        pendingBillsPanel.revalidate();
+        pendingBillsPanel.repaint();
+        paidBillsPanel.revalidate();
+        paidBillsPanel.repaint();
 
         tabbedPane.addTab("Cần thu", pendingBillsPanel);
         tabbedPane.addTab("Đã thu", paidBillsPanel);
@@ -45,6 +50,10 @@ public class BillPanel extends JPanel {
         customizeTabbedPane();
 
         add(tabbedPane, BorderLayout.CENTER);
+
+        // Revalidate và repaint cả tabbedPane
+        tabbedPane.revalidate();
+        tabbedPane.repaint();
     }
 
     private JPanel createSearchPanel() {
@@ -63,35 +72,5 @@ public class BillPanel extends JPanel {
         tabbedPane.setBackground(Color.WHITE);
         tabbedPane.setForeground(new Color(82, 82, 255));
         tabbedPane.setBorder(BorderFactory.createEmptyBorder());
-    }
-
-    private List<String[]> getPendingBillsRoomsFromDatabase() {
-        List<String[]> rooms = new ArrayList<>();
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT room_number, bill_status FROM room_details WHERE bill_status = 'pending'")) {
-
-            while (rs.next()) {
-                rooms.add(new String[]{rs.getString("room_number"), rs.getString("bill_status")});
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return rooms;
-    }
-
-    private List<String[]> getPaidBillsRoomsFromDatabase() {
-        List<String[]> rooms = new ArrayList<>();
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT room_number, bill_status FROM room_details WHERE bill_status = 'paid'")) {
-
-            while (rs.next()) {
-                rooms.add(new String[]{rs.getString("room_number"), rs.getString("bill_status")});
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return rooms;
     }
 }

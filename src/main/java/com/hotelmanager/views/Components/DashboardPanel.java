@@ -114,11 +114,6 @@ public class DashboardPanel extends JPanel {
         Integer bookedPercent = Math.round((float)cBooked / total * 100);
         Integer availablePercent = Math.round((float)cAvailable / total * 100);
 
-        // logs bookedPercent and availablePercent
-        System.out.println("total: " + total);
-        System.out.println("bookedPercent: " + bookedPercent);
-        System.out.println("availablePercent: " + availablePercent);
-
         dataset.setValue("Phòng đã ở", bookedPercent);
         dataset.setValue("Phòng trống", availablePercent);
 
