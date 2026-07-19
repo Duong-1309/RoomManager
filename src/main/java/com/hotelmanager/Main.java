@@ -14,7 +14,7 @@ public class Main {
         }
 
         SwingUtilities.invokeLater(() -> {
-            new MainFrame().setVisible(true);
+            new MainFrame().setVisible(true); // nhánh chính
         });
     }
 }
