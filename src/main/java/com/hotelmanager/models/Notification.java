@@ -8,7 +8,7 @@ public class Notification {
     private String content;
     private String type;
     private boolean isRead;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt; // Cần chỉnh sửa xíu phần này vì thông báo cần phải chỉnh
 
     public Notification(int id, String roomId, String title, String content, String type, boolean isRead, LocalDateTime createdAt) {
         this.id = id;
